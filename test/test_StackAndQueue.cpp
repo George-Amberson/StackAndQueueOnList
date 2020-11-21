@@ -11,6 +11,7 @@ TEST(Stack, Can_copy_List)
 {
 	StackOnList<int>q;
 	q.push(1);
+	q.push(2);
 	ASSERT_NO_THROW(StackOnList<int>w(q));
 }
 TEST(Stack, IsEmpty)
