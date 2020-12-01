@@ -11,6 +11,7 @@ TEST(Stack, Can_copy_List)
 {
 	StackOnList<int>q;
 	q.push(1);
+	q.push(2);
 	ASSERT_NO_THROW(StackOnList<int>w(q));
 }
 TEST(Stack, IsEmpty)
@@ -84,6 +85,16 @@ TEST(Queue, pop)
 	EXPECT_EQ(t, 2);
 }
 
-
-
+TEST(Queue, popandpush)
+{
+	QueueOnList<int>q;
+	q.push(0);
+	q.push(1);
+	q.push(3);
+	q.push(4);
+	q.pop();
+	q.pop();
+	int e = q.pop();
+	EXPECT_EQ(e, 3);
+}
 

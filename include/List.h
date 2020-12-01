@@ -17,7 +17,7 @@ template<class A1>
 class List
 {
 public:
-	List() :head(nullptr), size(0) {}
+	List() :head(nullptr),tail(nullptr), size(0) {}
 	
 	List(List& lhs)
 	{
@@ -34,10 +34,20 @@ public:
 		tmp = head;
 		for (int i = 0; i < size; i++)
 		{
+			tail = tmp;
 			tmp->value = ptr->value;
 			ptr = ptr->next;
 			tmp = tmp->next;
 		}
+	}
+	List(List&& lhs)
+	{
+		head = move(lhs.head);
+		size = lhs.size;
+		lhs.head = nullptr;
+		tail = lhs.tail;
+		lhs.tail = nullptr;
+		lhs.size = 0;
 	}
 	~List()
 	{
@@ -52,6 +62,16 @@ public:
 			}
 		}
 	}
+	List& operator =(List&& lhs)
+	{
+		this->head = move(lhs.head);
+		this->tail = move(lhs.tail);
+		this->size = lhs.size;
+		lhs.head = nullptr;
+		lhs.tail = nullptr;
+		lhs.size = 0;
+		return this;
+	}
 	bool IsEmpty()
 	{
 		return(head == nullptr);
@@ -63,20 +83,37 @@ public:
 	void push_back(const A1& lhs)
 	{
 		if (!(*this).IsEmpty()) {
-			Node<A1>*tmp = head;
-			while (head->next != nullptr)
-			{
-				head = head->next;
-			}
-			head->next = new Node<A1>;
-			(*head->next).value = lhs;
-			head = tmp;
+			tail->next = new Node<A1>;
+			tail->next->value = lhs;
+			tail->next->next = nullptr;
+			tail = tail->next;
 		}
 		else
 		{
 			head = new Node<A1>;
 			head->value = lhs;
 			head->next = nullptr;
+			tail = head;
+		}
+		size++;
+	}
+
+	void push_in_order(const A1& lhs)
+	{
+		if (!(*this).IsEmpty()) {
+			Node<A1>*tmp = head;
+			while ((tmp->next != nullptr)&&(tmp->next->value>lhs))
+			{
+				tmp = tmp->next;
+			}
+			this->push_after(tmp,lhs);
+		}
+		else
+		{
+			head = new Node<A1>;
+			head->value = lhs;
+			head->next = nullptr;
+			tail = head;
 		}
 		size++;
 	}
@@ -110,6 +147,7 @@ public:
 		A1 tmp1 = head->next->value;
 		delete head->next;
 		head->next = nullptr;
+		tail = head;
 		head = tmp;
 		size--;
 		return tmp1;
@@ -142,6 +180,25 @@ public:
 		size--;
 		return ret;
 
+	}
+	void push_after(Node<A1>* prev,const A1& data)
+	{
+		if (prev == nullptr) throw logic_error("nullptr");
+		if(prev==head)
+		{
+			if (data > head->value) {
+				this->push_front(data);
+			}
+			else
+			{
+				this->push_back(data);
+			}
+			return;
+		}
+		Node<A1>*next_after_prev = prev->next;
+		prev->next = new Node<A1>;
+		prev->next->value = data;
+		prev->next->next = next_after_prev;
 	}
 	void reverse()
 	{
@@ -201,7 +258,7 @@ public:
 		return out;
 	}
 private:
-
 	Node<A1>* head;
+	Node<A1>* tail;
 	int size;
 };
