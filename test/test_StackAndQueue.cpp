@@ -98,4 +98,3 @@ TEST(Queue, popandpush)
 	EXPECT_EQ(e, 3);
 }
 
-
